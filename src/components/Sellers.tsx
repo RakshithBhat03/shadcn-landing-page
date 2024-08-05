@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function Sellers() {
-  const [sellersData, setSellersData] = useState('');
+  const [sellersData, setSellersData] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('https://backend-sellers.onrender.com/sellers.json')
-      .then(response => {
+    fetch("https://backend-sellers.onrender.com/sellers.json")
+      .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         return response.text();
       })
-      .then(data => {
+      .then((data) => {
         setSellersData(data);
         setIsLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         setError(error.message);
         setIsLoading(false);
       });
