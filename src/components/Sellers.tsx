@@ -28,7 +28,7 @@ function Sellers() {
 
   return (
     <div>
-      <pre>{sellersData}</pre>
+      <pre>{JSON.stringify(JSON.parse(sellersData), null, 2)}</pre>
     </div>
   );
 }
