@@ -1,34 +1,55 @@
 import { useState, useEffect } from "react";
+import supabase from "../config/supabaseClient";
+import { Database } from "../types/database.types";
+
+type Seller = Database["public"]["Tables"]["Sellers"]["Row"];
 
 function Sellers() {
-  const [sellersData, setSellersData] = useState("");
+  const [sellersData, setSellersData] = useState<Seller[]>([]);
+  const [updatedSellersData, setUpdatedSellersData] = useState<{
+    contact_address: string;
+    contact_email: string;
+    sellers: Seller[];
+    version: number;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("https://backend-sellers.onrender.com/sellers.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.text();
-      })
-      .then((data) => {
-        setSellersData(data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
+    const fetchSellers = async () => {
+      const { data, error } = await supabase.from("Sellers").select("*");
+
+      if (error) {
         setError(error.message);
         setIsLoading(false);
-      });
+      } else if (data) {
+        setSellersData(data);
+        addAdditionalDetails(data);
+        setIsLoading(false);
+      }
+    };
+    fetchSellers();
   }, []);
+
+  const addAdditionalDetails = (sellersData: Seller[]) => {
+    const data = {
+      contact_address:
+        "#34, First floor, Technopark, AVS compound,Koramangala 4th block Bengaluru, Karnataka 560034, India",
+      contact_email: "partners@streamlyn.com",
+      sellers: sellersData,
+      version: 1,
+    };
+    setUpdatedSellersData(data);
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
-      <pre>{JSON.stringify(JSON.parse(sellersData), null, 2)}</pre>
+      <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+        {JSON.stringify(updatedSellersData)}
+      </pre>
     </div>
   );
 }
