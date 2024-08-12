@@ -18,7 +18,6 @@ function Sellers() {
   useEffect(() => {
     const fetchSellers = async () => {
       const { data, error } = await supabase.from("Sellers").select("*");
-
       if (error) {
         setError(error.message);
         setIsLoading(false);
@@ -36,10 +35,15 @@ function Sellers() {
       contact_address:
         "#34, First floor, Technopark, AVS compound,Koramangala 4th block Bengaluru, Karnataka 560034, India",
       contact_email: "partners@streamlyn.com",
-      sellers: sellersData,
+      //* Remove id from the sellers array
+      sellers:
+        sellersData.map((seller) => {
+          const { id, ...rest } = seller;
+          return rest;
+        }) || [],
       version: 1,
     };
-    setUpdatedSellersData(data);
+    setUpdatedSellersData(data as any);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -48,7 +52,7 @@ function Sellers() {
   return (
     <div>
       <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
-        {JSON.stringify(updatedSellersData)}
+        {JSON.stringify(updatedSellersData, null, 2)}
       </pre>
     </div>
   );
